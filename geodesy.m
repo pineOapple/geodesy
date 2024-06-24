@@ -42,8 +42,8 @@ plot3(0, -E, 0, 'ro', 'DisplayName', 'Focal Point 2');
 plot3(0, 0, 0, 'ro', 'DisplayName', 'Center');
 
 % Calculate and plot radial lines
-N = ELLIPSE_N(a, e, phi);
-[x, y, z] = ELLIPSE_COORD(a, e, phi, 0);
+N = geodesy.GDS_ELLIPSE_N(a, e, phi);
+[x, y, z] = geodesy.GDS_ELLIPSOID_COORD(a, e, phi, lambda);
 x_end = N .* cos(phi);
 y_end = N .* (1 - e^2) .* sin(phi);
 x_start = zeros(size(phi));
