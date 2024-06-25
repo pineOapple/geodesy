@@ -11,4 +11,4 @@ function r_g = INERTIAL_TO_LOCAL(lambda,phi, year, month, day, ut1, alpha, delta
 % TRANSFORMATION
 N = rotx(-eps0-deleps)*rotz(-delpsi)*rotx(eps0);
 P = rotz(-za)*roty(thetaa)*rotz(-zetaa);
-r_g = roty(90-phi)*rotz(lambda)*rotz((360*gast)/24)*N*P*r_i';
+r_g = roty(90-phi)*rotz(lambda)*rotz((360*gast)/24)*N*P*r_i;
