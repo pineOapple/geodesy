@@ -45,7 +45,7 @@ function [gast, gmst] = GDS_JUL_TO_GAST(ut1, t)
 % Here we go
 gmst = (ut1 * 3600 + 24110.54841 + 8640184.812866 * t + 0.093104 * t.^2 ...
         - 6.2e-6 * t.^3) / 3600;
-[eps0, deleps, delpsi] = geodesy.GDS_NUTATION(t);
+[eps0, deleps, delpsi] = GDS_NUTATION(t);
 epsi = (eps0 + deleps) / 180 * pi;
 eq = delpsi .* cos(epsi);
 gast = gmst + eq / 15;
