@@ -1,4 +1,4 @@
-function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color)
+function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color, legend_str)
 % GDS_SKYPLOT Polar coordinate plot using azimuth and elevation data
 %
 % DESCRIPTION:
@@ -9,6 +9,7 @@ function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color)
 % USAGE:
 %   hsky = GDS_SKYPLOT(azim, elev)
 %   hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color)
+%   hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color, legend_str)
 %
 % INPUT:
 %   azim       - Azimuth angles in degrees (numeric array)
@@ -16,6 +17,7 @@ function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color)
 %   line_style - Line style for the plot (optional, default: '-')
 %   line_width - Line width for the plot (optional, default: 1.5)
 %   line_color - Line color for the plot (optional, default: 'b')
+%   legend_str - Legend string for the plot (optional, default: '')
 %
 % OUTPUT:
 %   hsky - Handle to the plot object
@@ -28,7 +30,7 @@ function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color)
 % EXAMPLE:
 %   azim = 0:360; % Azimuth from 0 to 360 degrees
 %   elev = 30 * ones(size(azim)); % Elevation at 30 degrees
-%   hsky = GDS_SKYPLOT(azim, elev, '--', 2, 'r'); % Red dashed line
+%   hsky = GDS_SKYPLOT(azim, elev, '--', 2, 'r', 'Sun Path'); % Red dashed line with legend
 %
 % COPYRIGHT:
 %   (c) Sneeuw/Zebhauser, IAPG, TU Munich
@@ -50,6 +52,9 @@ function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color)
     end
     if nargin < 5
         line_color = 'b';
+    end
+    if nargin < 6
+        legend_str = '';
     end
 
     % Checks and validations
@@ -134,6 +139,11 @@ function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color)
     % Plot data on top of grid 
     q = plot(xx, yy, line_style, 'LineWidth', line_width, 'Color', line_color);
     if nargout > 0, hsky = q; end
+
+    % Add legend if specified
+    if ~isempty(legend_str)
+        legend(legend_str);
+    end
 
     if ~hold_state
         axis('equal')

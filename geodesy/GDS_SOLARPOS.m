@@ -1,4 +1,4 @@
-function [aapp,dapp,r] = solarpos(t)
+function [aapp,dapp,r] = GDS_SOLARPOS(t)
 
 % SOLARPOS calculates the apparent position of the Sun 
 %          referring to the true equinox of date
@@ -51,7 +51,7 @@ Lapp = Ltru - 0.00569 - 0.00478*sin(om);              % [deg]
 Lapp = Lapp * pi/180;                                 % [rad]
 
 % obliquity of ecliptic
-[eps0,deleps,delpsi] = nutation(t);                   % [deg]
+[eps0,deleps,delpsi] = GDS_NUTATION(t);                   % [deg]
 eps  = ( eps0 + 0.00256*cos(om) ) *pi/180;            % [rad]
 
 % apparent right ascension and declination
