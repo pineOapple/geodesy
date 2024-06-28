@@ -5,10 +5,12 @@ close all
 % Initialize the simulation with Neumayer Station's coordinates
 phi = -70.6734; % latitude in degrees
 lambda = -8.2741; % longitude in degrees
+phi = 45; % latitude in degrees
+lambda = 90; % longitude in degrees
 phi = 0; % latitude in degrees
 lambda = 0; % longitude in degrees
 yr = 2024;
-m = 6;
+m = 3;
 d = 21;
 ut1 = 12;
 
@@ -69,32 +71,98 @@ hold off;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SKYPLOT
 nexttile;
-% hold on;
-% view(30,30);
+GDS_SKYPLOT(0, 0);
+hold on; % Ensure all plots are on the same figure
+colors = [
+    "#f21821",  % Blue
+    "#f8631f",
+    "#fa931a",
+    "#ffc309",
+    "#fff600",
+    "#cdde25",
+    "#8bc83b",
+    "#04b99e",
+    "#01aef3",
+    "#5954a8",
+    "#8f59a7",  % Light Red
+    "#bf168d"   % Red
+];
 
 % [3] Create the Sunposition and plot it
-ut1 = 0;
-[R, G] = GDS_INT_TO_LCL(lambda,phi,yr,m,d,ut1);
-[t, ~, ~] = GDS_JULIANC(yr, m, d, ut1);
-[aapp,dapp,~] = GDS_SOLARPOS(t);
-[x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
-vec = R*[x y z]';
-[az, el, r] = cart2sph(vec(1),vec(2),vec(3));
-sunpos = [rad2deg(az) rad2deg(el)];
 
+for month = 1:1:6
 
-for ut1 = 0:1:23
-    [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,m,d,ut1);
-    [t, ~, ~] = GDS_JULIANC(yr, m, d, ut1);
+    ut1 = 0;
+    [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+    [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
     [aapp,dapp,~] = GDS_SOLARPOS(t);
     [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
     vec = R*[x y z]';
     [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
-    sunpos(end+1,:) = [rad2deg(az) rad2deg(el)];
+    sunpos = [rad2deg(az) rad2deg(el)];
+    
+    for ut1 = 0:0.1:24
+        [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+        [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
+        [aapp,dapp,~] = GDS_SOLARPOS(t);
+        [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
+        vec = R*[x y z]';
+        [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
+        sunpos(end+1,:) = [rad2deg(az) rad2deg(el)];
+    end
+    sunpos = sunpos(sunpos(:, 2) >= 0, :);    % Add each month's sun positions to the same plot
+    GDS_SKYPLOT(sunpos(:,1), sunpos(:,2), '-', 3, colors(month), );
 end
 
-GDS_SKYPLOT(sunpos(:,1), sunpos(:,2), '-', 1, 'r');
-% hold off;
+hold off;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SKYPLOT
+nexttile;
+GDS_SKYPLOT(0, 0);
+hold on; % Ensure all plots are on the same figure
+colors = [
+    "#f21821",  % Blue
+    "#f8631f",
+    "#fa931a",
+    "#ffc309",
+    "#fff600",
+    "#cdde25",
+    "#8bc83b",
+    "#04b99e",
+    "#01aef3",
+    "#5954a8",
+    "#8f59a7",  % Light Red
+    "#bf168d"   % Red
+];
+
+% [3] Create the Sunposition and plot it
+
+for month = 7:1:12
+
+    ut1 = 0;
+    [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+    [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
+    [aapp,dapp,~] = GDS_SOLARPOS(t);
+    [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
+    vec = R*[x y z]';
+    [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
+    sunpos = [rad2deg(az) rad2deg(el)];
+    
+    for ut1 = 0:0.1:24
+        [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+        [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
+        [aapp,dapp,~] = GDS_SOLARPOS(t);
+        [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
+        vec = R*[x y z]';
+        [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
+        sunpos(end+1,:) = [rad2deg(az) rad2deg(el)];
+    end
+    sunpos = sunpos(sunpos(:, 2) >= 0, :);    % Add each month's sun positions to the same plot
+    GDS_SKYPLOT(sunpos(:,1), sunpos(:,2), '-', 3, colors(month));
+end
+
+hold off;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOCAL
 
 nexttile;

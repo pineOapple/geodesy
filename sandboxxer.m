@@ -5,8 +5,10 @@ close all
 % Initialize the simulation with Neumayer Station's coordinates
 phi = -70.6734; % latitude in degrees
 lambda = -8.2741; % longitude in degrees
+phi = 45; % latitude in degrees
+lambda = 90; % longitude in degrees
 phi = 0; % latitude in degrees
-lambda = 0; % longitude in degrees
+lambda = 89; % longitude in degrees
 yr = 2024;
 m = 3;
 d = 21;
@@ -71,8 +73,9 @@ hold off;
 nexttile;
 GDS_SKYPLOT(0, 0);
 hold on; % Ensure all plots are on the same figure
+
 colors = [
-    "#f21821",  % Blue
+    "#f21821",  % Red
     "#f8631f",
     "#fa931a",
     "#ffc309",
@@ -82,35 +85,51 @@ colors = [
     "#04b99e",
     "#01aef3",
     "#5954a8",
-    "#8f59a7",  % Light Red
-    "#bf168d"   % Red
+    "#8f59a7",  % Purple
+    "#bf168d"   % Magenta
 ];
+
+% Array to store plot handles for legend
+legend_handles = [];
+legend_entries = {};
+
+% Cell array of month names
+month_names = {'January', 'February', 'March', 'April', 'May', 'June', ...
+               'July', 'August', 'September', 'October', 'November', 'December'};
 
 % [3] Create the Sunposition and plot it
 
 for month = 1:1:6
 
     ut1 = 0;
-    [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+    [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
     [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
-    [aapp,dapp,~] = GDS_SOLARPOS(t);
-    [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
-    vec = R*[x y z]';
-    [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
+    [aapp, dapp, ~] = GDS_SOLARPOS(t);
+    [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
+    vec = R * [x y z]';
+    [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
     sunpos = [rad2deg(az) rad2deg(el)];
     
-    for ut1 = 0:0.1:23
-        [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+    for ut1 = 0:0.1:24
+        [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
         [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
-        [aapp,dapp,~] = GDS_SOLARPOS(t);
-        [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
-        vec = R*[x y z]';
-        [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
-        sunpos(end+1,:) = [rad2deg(az) rad2deg(el)];
+        [aapp, dapp, ~] = GDS_SOLARPOS(t);
+        [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
+        vec = R * [x y z]';
+        [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
+        sunpos(end+1, :) = [rad2deg(az) rad2deg(el)];
     end
-    sunpos = sunpos(sunpos(:, 2) >= 0, :);    % Add each month's sun positions to the same plot
-    GDS_SKYPLOT(sunpos(:,1), sunpos(:,2), '-', 3, colors(month));
+    
+    sunpos = sunpos(sunpos(:, 2) >= 0, :); % Filter out negative elevations
+    
+    % Plot and store handle
+    hsky = GDS_SKYPLOT(sunpos(:, 1), sunpos(:, 2), '-', 3, colors(month, :), '');
+    legend_handles(end+1) = hsky; % Collect handles
+    legend_entries{end+1} = month_names{month}; % Collect legend entries
 end
+
+% Update legend at the end
+legend(legend_handles, legend_entries);
 
 hold off;
 
@@ -118,8 +137,9 @@ hold off;
 nexttile;
 GDS_SKYPLOT(0, 0);
 hold on; % Ensure all plots are on the same figure
+
 colors = [
-    "#f21821",  % Blue
+    "#f21821",  % Red
     "#f8631f",
     "#fa931a",
     "#ffc309",
@@ -129,37 +149,54 @@ colors = [
     "#04b99e",
     "#01aef3",
     "#5954a8",
-    "#8f59a7",  % Light Red
-    "#bf168d"   % Red
+    "#8f59a7",  % Purple
+    "#bf168d"   % Magenta
 ];
+
+% Array to store plot handles for legend
+legend_handles = [];
+legend_entries = {};
+
+% Cell array of month names
+month_names = {'January', 'February', 'March', 'April', 'May', 'June', ...
+               'July', 'August', 'September', 'October', 'November', 'December'};
 
 % [3] Create the Sunposition and plot it
 
 for month = 7:1:12
 
     ut1 = 0;
-    [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+    [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
     [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
-    [aapp,dapp,~] = GDS_SOLARPOS(t);
-    [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
-    vec = R*[x y z]';
-    [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
+    [aapp, dapp, ~] = GDS_SOLARPOS(t);
+    [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
+    vec = R * [x y z]';
+    [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
     sunpos = [rad2deg(az) rad2deg(el)];
     
-    for ut1 = 0:0.1:23
-        [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,month,d,ut1);
+    for ut1 = 0:0.1:24
+        [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
         [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
-        [aapp,dapp,~] = GDS_SOLARPOS(t);
-        [x,y,z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
-        vec = R*[x y z]';
-        [az, el, r] = cart2sph(vec(1),vec(2),vec(3));
-        sunpos(end+1,:) = [rad2deg(az) rad2deg(el)];
+        [aapp, dapp, ~] = GDS_SOLARPOS(t);
+        [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
+        vec = R * [x y z]';
+        [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
+        sunpos(end+1, :) = [rad2deg(az) rad2deg(el)];
     end
-    sunpos = sunpos(sunpos(:, 2) >= 0, :);    % Add each month's sun positions to the same plot
-    GDS_SKYPLOT(sunpos(:,1), sunpos(:,2), '-', 3, colors(month));
+    
+    sunpos = sunpos(sunpos(:, 2) >= 0, :); % Filter out negative elevations
+    
+    % Plot and store handle
+    hsky = GDS_SKYPLOT(sunpos(:, 1), sunpos(:, 2), '-', 3, colors(month, :), '');
+    legend_handles(end+1) = hsky; % Collect handles
+    legend_entries{end+1} = month_names{month}; % Collect legend entries
 end
 
+% Update legend at the end
+legend(legend_handles, legend_entries);
+
 hold off;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOCAL
 

@@ -13,4 +13,4 @@ R = roty(-90+phi)*rotz(-lambda)*rotz(-(360*gast)/23.93447192)*N*P;
 
 % Anderes Vorzeichen, da wir unseren GAST im Inertialsystem und nicht im
 % Lokalsystem sehen wollen!
-G = rotz((360*gast)/23.93447192);
+G = rotz(-(360*gast)/23.93447192);

@@ -137,13 +137,8 @@ function hsky = GDS_SKYPLOT(azim, elev, line_style, line_width, line_color, lege
     xx = (90 - elev) .* sin(azim / 180 * pi);
 
     % Plot data on top of grid 
-    q = plot(xx, yy, line_style, 'LineWidth', line_width, 'Color', line_color);
+    q = plot(xx, yy, line_style, 'LineWidth', line_width, 'Color', line_color, 'DisplayName', legend_str);
     if nargout > 0, hsky = q; end
-
-    % Add legend if specified
-    if ~isempty(legend_str)
-        legend(legend_str);
-    end
 
     if ~hold_state
         axis('equal')
