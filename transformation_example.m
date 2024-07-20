@@ -3,27 +3,27 @@ clc
 close all
 
 % Initialize the simulation with Neumayer Station's coordinates
-phi = -70.6734; % latitude in degrees
-lambda = -8.2741; % longitude in degrees
-phi = 0; % latitude in degrees
-lambda = 0; % longitude in degrees
-season = 4;
-alpha = [0 90 180 270];
-delta = [0 23.5 0 -23.5];
-cmonth = [3 6 9 12];
-alpha = alpha(season);
-delta = delta(season);
-cmonth = cmonth(season);
-cyear = 2024;
-cmonth = 6;
-cday = 21;
-ut1 = 12;
+phi     = -70.6734; % latitude in degrees
+lambda  = -8.2741; % longitude in degrees
+phi     = 0; % latitude in degrees
+lambda  = 0; % longitude in degrees
+season  = 4;
+alpha   = [0 90 180 270];
+delta   = [0 23.5 0 -23.5];
+cmonth  = [3 6 9 12];
+alpha   = alpha(season);
+delta   = delta(season);
+cmonth  = cmonth(season);
+cyear   = 2024;
+cmonth  = 6;
+cday    = 21;
+ut1     = 12;
 
 % GAST, NUTATION, PRECESSION, JULICANCENTURIES
-[t, ~, ~] = gds.GDS_JULIANC(cyear, cmonth, cday, ut1);
-[gast, ~] = gds.GDS_JUL_TO_GAST(ut1, t);
-[eps0, deleps, delpsi] = gds.GDS_NUTATION(t);
-[za, thetaa, zetaa] = gds.GDS_PRECESSION(t);
+[t, ~, ~] = GDS_JULIANC(cyear, cmonth, cday, ut1);
+[gast, ~] = GDS_JUL_TO_GAST(ut1, t);
+[eps0, deleps, delpsi] = GDS_NUTATION(t);
+[za, thetaa, zetaa] = GDS_PRECESSION(t);
 
 % POSITION OF OBJECT
 [r_i(1),r_i(2),r_i(3)] = sph2cart(deg2rad(alpha), deg2rad(delta), 1);
@@ -60,8 +60,8 @@ plot3(z, y, x, 'k', 'LineWidth', 1);
 
 theta = linspace(-pi/2, pi/2, 100);
 % for i=1:1:24
-[t, ~, ~] = gds.GDS_JULIANC(cyear, cmonth, cday, ut1);
-[gast, ~] = gds.GDS_JUL_TO_GAST(ut1, t);
+[t, ~, ~] = GDS_JULIANC(cyear, cmonth, cday, ut1);
+[gast, ~] = GDS_JUL_TO_GAST(ut1, t);
 [x,y,z] = sph2cart(deg2rad(gast*15), theta, 1);
 plot3(x, y, z, 'r', 'LineWidth', 1);
 % end
@@ -89,8 +89,8 @@ plot3(x, z, y, 'k', 'LineWidth', 1);
 plot3(z, y, x, 'k', 'LineWidth', 1);
 
 theta = linspace(-pi/2, pi/2, 100);
-[t, ~, ~] = gds.GDS_JULIANC(cyear, cmonth, cday, ut1);
-[gast, ~] = gds.GDS_JUL_TO_GAST(ut1, t);
+[t, ~, ~] = GDS_JULIANC(cyear, cmonth, cday, ut1);
+[gast, ~] = GDS_JUL_TO_GAST(ut1, t);
 [x,y,z] = sph2cart(deg2rad(gast*15), theta, 1);
 plot3(x, y, z, 'r', 'LineWidth', 1);
 
@@ -117,8 +117,8 @@ plot3(x, y, z, 'k', 'LineWidth', 1);
 plot3(x, z, y, 'k', 'LineWidth', 1);
 plot3(z, y, x, 'k', 'LineWidth', 1);
 theta = linspace(-pi/2, pi/2, 100);
-[t, ~, ~] = gds.GDS_JULIANC(cyear, cmonth, cday, ut1);
-[gast, ~] = gds.GDS_JUL_TO_GAST(ut1, t);
+[t, ~, ~] = GDS_JULIANC(cyear, cmonth, cday, ut1);
+[gast, ~] = GDS_JUL_TO_GAST(ut1, t);
 [x,y,z] = sph2cart(deg2rad(gast*15), theta, 1);
 plot3(x, y, z, 'r', 'LineWidth', 1);
 

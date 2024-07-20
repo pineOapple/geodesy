@@ -1,72 +1,171 @@
 clear
 clc
 close all
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% VARIABLES
 
 % Initialize the simulation with Neumayer Station's coordinates
 phi = -70.6734; % latitude in degrees
 lambda = -8.2741; % longitude in degrees
-phi = 45; % latitude in degrees
-lambda = 90; % longitude in degrees
-phi = 0; % latitude in degrees
-lambda = 89; % longitude in degrees
+% phi = 85; % latitude in degrees
+% lambda = 90; % longitude in degrees
+% phi = 70; % latitude in degrees
+% lambda = 0; % longitude in degrees
+
+% Date
 yr = 2024;
-m = 3;
-d = 21;
+mt = 9;
+dy = 21;
 ut1 = 12;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INERTIAL
+[R0,P0, N0, G0, R1,P1, N1, G1,t, mjd, jd, gast, gmst, eps0, deleps, delpsi, za, thetaa, zetaa] = GDS_INT_TO_LCL(lambda, phi, yr, mt, dy, ut1);
+
 figure;
+colormap('gray');
 set(gcf, 'Position',  [1720, -7, 1720, 1440]);
-tiledlayout(2,3);
+tiledlayout(3,3);
 nexttile;
-hold on;
-view(30,30);
-axis equal;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% [CELESTIAL] CONVENTIONAL INERTIAL [NCP]
+hold on; % We want to plot all at once
+view(30,30); % Good perspective setting
+axis equal; % Isoview
+title('Inertial System i_0')
 
 % [1] Make a sphere, plot it
 [u, v, w] = ellipsoid(0,0,0,1,1,1,20);
-surf(u, v, w, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+s = surf(u, v, w, 'EdgeColor', 'interp', 'FaceAlpha', 0.2);
 
 % [2] Create the GC and plot them
-theta = linspace(-pi,pi,100);
-x = cos(theta); y = sin(theta); z = zeros(size(theta));
+theta = linspace(-pi,pi,100); % Generate the angles
+x = cos(theta); 
+y = sin(theta); 
+z = zeros(size(theta)); % Process to circles
+
 gc_xy_i = [x' y' z']';
 gc_xz_i = [x' z' y']';
 gc_yz_i = [z' y' x']';
+
 plot3(gc_xy_i(1,:), gc_xy_i(2,:), gc_xy_i(3,:), 'k', 'LineWidth', 1);
 plot3(gc_xz_i(1,:), gc_xz_i(2,:), gc_xz_i(3,:), 'k', 'LineWidth', 1);
 plot3(gc_yz_i(1,:), gc_yz_i(2,:), gc_yz_i(3,:), 'k', 'LineWidth', 1);
 
-% [3] Create the GWC and plot it
+% [5] Create the Ecliptic (black)
+gc_ec_i = rotx(eps0)*N1*P1*gc_xy_i; % Positive, cause we rotate the object!
+plot3(gc_ec_i(1,:), gc_ec_i(2,:), gc_ec_i(3,:), 'k', 'LineWidth', 2);
+
+% [3] Create the GWC (red semicircle) and plot it
 theta = theta/2;
 x = cos(theta); y = zeros(size(theta)); z = sin(theta);
 gw_i = [x' y' z']';
 plot3(gw_i(1,:), gw_i(2,:), gw_i(3,:), 'r', 'LineWidth', 2);
 
-% [3] Create the Sunposition and plot it
-[t, ~, ~] = GDS_JULIANC(yr, m, d, ut1);
-[aapp,dapp,~] = GDS_SOLARPOS(t);
-[x y z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
-pos = POINT_TO_VECTOR(x,y,z);
-HOLD_PLOT_VEC3(pos, 'Sonnenposition: '+string(ut1)+'h');
-
-% [5] Create the Ecliptic and plot it
-gc_ec_i = rotx(23.5)*gc_xy_i; % Positive, cause we rotate the object!
-plot3(gc_ec_i(1,:), gc_ec_i(2,:), gc_ec_i(3,:), 'k', 'LineWidth', 2);
-
 % [6] Create the Ecliptic and plot it
-[R, G] = GDS_INT_TO_LCL(lambda,phi,yr,m,d,0);
-gw_c = G*gw_i;
+gw_c = G1*N1*P1*gw_i;
 h = plot3(gw_c(1,:), gw_c(2,:), gw_c(3,:), 'b', 'LineWidth', 2);
 
-% [4] Create inertial transformation matrix and rotate GWC
-for j = 1:1:1
-    [R, G] = GDS_INT_TO_LCL(lambda,phi,yr,m,d,j);
-    gw_c = G*gw_i;
-    set(h, 'XData', gw_c(1, :), 'YData', gw_c(2, :), 'ZData', gw_c(3, :));
-    pause(0.05);
-end
 
+
+
+% view(0,90)
+
+% [4] Create inertial transformation matrix and rotate GWC
+% for j = 1:0.1:24
+%     [R0,P0, N0, G0, R1,P1, N1, G1,t, mjd, jd, gast, gmst, eps0, deleps, delpsi, za, thetaa, zetaa] = GDS_INT_TO_LCL(lambda, phi, yr, mt, dy, j);
+%     gw_c = G1*N1*P1*gw_i;
+%     set(h, 'XData', gw_c(1, :), 'YData', gw_c(2, :), 'ZData', gw_c(3, :));
+%     if j == 1
+%         pause(1)
+%     end
+%     pause(0.05);
+% end
+
+[x y z] = sph2cart(deg2rad(lambda),deg2rad(phi),1);
+POS0 = [x y z]';
+POS1 = G1*N1*P1*POS0;
+
+K0 = 0.5*eye(3);
+K1 = R0*K0;
+quiver3(0,0,0, K0(1,1), K0(1,2), K0(1,3), 'r', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+quiver3(0,0,0, K0(2,1), K0(2,2), K0(2,3), 'g', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+quiver3(0,0,0, K0(3,1), K0(3,2), K0(3,3), 'b', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+
+K0 = K1;
+quiver3(POS1(1),POS1(2),POS1(3), K0(1,1), K0(1,2), K0(1,3), 'r', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+quiver3(POS1(1),POS1(2),POS1(3), K0(2,1), K0(2,2), K0(2,3), 'g', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+quiver3(POS1(1),POS1(2),POS1(3), K0(3,1), K0(3,2), K0(3,3), 'b', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+
+quiver3(0,0,0, POS1(1),POS1(2),POS1(3), 'm', 'filled','LineWidth',2, 'AutoScale','off','MaxHeadSize',0.5);
+% quiver3(0,0,0, 0, 0, 0, 'g', 'filled','LineWidth',2);
+text(0,0,1.3,'Local Time UT1: '+ string(ut1)+'h')
+% plot3()
+% [4] Create the Sunposition and plot it
+[aapp,dapp,~] = GDS_SOLARPOS(t);
+[x y z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
+
+quiver3(POS1(1),POS1(2),POS1(3),x,y,z, 'y', 'filled','LineWidth',2, 'AutoScale','off','MaxHeadSize',0.5);
+
+hold off;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% [CELESTIAL] CONVENTIONAL INERTIAL
+nexttile
+hold on; % We want to plot all at once
+view(30,30); % Good perspective setting
+axis equal; % Isoview
+title('Inverse Test')
+
+% [1] Make a sphere, plot it
+[u, v, w] = ellipsoid(0,0,0,1,1,1,20);
+s = surf(u, v, w, 'EdgeColor', 'interp', 'FaceAlpha', 0.2);
+
+
+M = inv(R0);
+K0 = M*K0;
+POSS = R0*[x y z]';
+quiver3(0,0,0, K0(1,1), K0(1,2), K0(1,3), 'r', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+quiver3(0,0,0, K0(2,1), K0(2,2), K0(2,3), 'g', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+quiver3(0,0,0, K0(3,1), K0(3,2), K0(3,3), 'b', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
+quiver3(0,0,0,POSS(1),POSS(2),POSS(3),'y', 'filled','LineWidth',2, 'AutoScale','off','MaxHeadSize',0.5);
+
+hold off
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% [CELESTIAL] CONVENTIONAL INERTIAL
+nexttile
+hold on; % We want to plot all at once
+view(30,30); % Good perspective setting
+axis equal; % Isoview
+title('Mean inertial')
+
+% [1] Make a sphere, plot it
+[u, v, w] = ellipsoid(0,0,0,1,1,1,20);
+s = surf(u, v, w, 'EdgeColor', 'flat', 'FaceAlpha', 0.3);
+
+
+gw_c = G1*gw_i;
+h = plot3(gw_c(1,:), gw_c(2,:), gw_c(3,:), 'b', 'LineWidth', 2);
+
+[x y z] = sph2cart(deg2rad(lambda),deg2rad(phi),1);
+POS0 = [x y z]';
+POS1 = G1*POS0;
+
+% Originales Koordinatensystem
+K0 = 0.5*eye(3);
+quiver3(0,0,0, K0(1,1), K0(1,2), K0(1,3), 'r', 'filled','LineWidth',3, 'AutoScale','off');
+quiver3(0,0,0, K0(2,1), K0(2,2), K0(2,3), 'g', 'filled','LineWidth',3, 'AutoScale','off');
+quiver3(0,0,0, K0(3,1), K0(3,2), K0(3,3), 'b', 'filled','LineWidth',3, 'AutoScale','off');
+
+% Nach kompletter Rotation und Translation 
+K1 = R0*K0;
+quiver3(POS1(1),POS1(2),POS1(3), K1(1,1), K1(1,2), K1(1,3), 'r', 'filled','LineWidth',3, 'AutoScale','off');
+quiver3(POS1(1),POS1(2),POS1(3), K1(2,1), K1(2,2), K1(2,3), 'g', 'filled','LineWidth',3, 'AutoScale','off');
+quiver3(POS1(1),POS1(2),POS1(3), K1(3,1), K1(3,2), K1(3,3), 'b', 'filled','LineWidth',3, 'AutoScale','off');
+
+quiver3(0,0,0, POS1(1),POS1(2),POS1(3), 'm', 'filled','LineWidth',2, 'AutoScale','off');
+% quiver3(0,0,0, 0, 0, 0, 'g', 'filled','LineWidth',2);
+
+% [1] Make a sphere, plot it
+[u, v, w] = ellipsoid(POS1(1),POS1(2),POS1(3),.3,.3,.3,10);
+s = surf(u, v, w, 'EdgeColor', 'flat', 'FaceAlpha', 0.3);
 hold off;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SKYPLOT
@@ -98,34 +197,34 @@ month_names = {'January', 'February', 'March', 'April', 'May', 'June', ...
                'July', 'August', 'September', 'October', 'November', 'December'};
 
 % [3] Create the Sunposition and plot it
+sunpos = [];
 
-for month = 1:1:6
-
+for mt = 1:1:6
     ut1 = 0;
-    [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
-    [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
     [aapp, dapp, ~] = GDS_SOLARPOS(t);
     [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
-    vec = R * [x y z]';
+    vec = R0 * [x y z]';
     [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
     sunpos = [rad2deg(az) rad2deg(el)];
     
-    for ut1 = 0:0.1:24
-        [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
-        [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
-        [aapp, dapp, ~] = GDS_SOLARPOS(t);
-        [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
-        vec = R * [x y z]';
-        [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
+    for ut1 = 0.0:0.2:24
+        % Acquiring exact position per hour in local coordinates
+        [R0,P0, N0, G0, R1,P1, N1, G1,t, mjd, jd, gast, gmst, eps0, deleps, delpsi, za, thetaa, zetaa] = GDS_INT_TO_LCL(lambda, phi, yr, mt, dy, ut1);
+        [aapp, dapp, ~] = GDS_SOLARPOS(t); % Position of the sun in inertial coordinates
+        [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1); % Conversion to cartesian coordinates
+        vec = R0 * [x y z]';  % Transformation to local coordinates
+        [az, el, ~] = cart2sph(vec(1), vec(2), vec(3)); % Conversion back to spherical coordinates
         sunpos(end+1, :) = [rad2deg(az) rad2deg(el)];
     end
     
     sunpos = sunpos(sunpos(:, 2) >= 0, :); % Filter out negative elevations
     
     % Plot and store handle
-    hsky = GDS_SKYPLOT(sunpos(:, 1), sunpos(:, 2), '-', 3, colors(month, :), '');
-    legend_handles(end+1) = hsky; % Collect handles
-    legend_entries{end+1} = month_names{month}; % Collect legend entries
+    hsky = GDS_SKYPLOT(sunpos(2:end, 1), sunpos(2:end, 2), '-', 3, colors(mt, :), '');
+    if length(sunpos)>2
+        legend_handles(end+1) = hsky; % Collect handles
+        legend_entries{end+1} = month_names{mt}; % Collect legend entries
+    end
 end
 
 % Update legend at the end
@@ -163,23 +262,23 @@ month_names = {'January', 'February', 'March', 'April', 'May', 'June', ...
 
 % [3] Create the Sunposition and plot it
 
-for month = 7:1:12
+for mt = 7:1:12
 
     ut1 = 0;
-    [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
-    [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
+    [R0, G0] = GDS_INT_TO_LCL(lambda, phi, yr, mt, dy, ut1);
+    [t, ~, ~] = GDS_JULIANC(yr, mt, dy, ut1);
     [aapp, dapp, ~] = GDS_SOLARPOS(t);
     [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
-    vec = R * [x y z]';
+    vec = R0 * [x y z]';
     [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
     sunpos = [rad2deg(az) rad2deg(el)];
     
     for ut1 = 0:0.1:24
-        [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, month, d, ut1);
-        [t, ~, ~] = GDS_JULIANC(yr, month, d, ut1);
+        [R0, G0] = GDS_INT_TO_LCL(lambda, phi, yr, mt, dy, ut1);
+        [t, ~, ~] = GDS_JULIANC(yr, mt, dy, ut1);
         [aapp, dapp, ~] = GDS_SOLARPOS(t);
         [x, y, z] = sph2cart(deg2rad(aapp), deg2rad(dapp), 1);
-        vec = R * [x y z]';
+        vec = R0 * [x y z]';
         [az, el, ~] = cart2sph(vec(1), vec(2), vec(3));
         sunpos(end+1, :) = [rad2deg(az) rad2deg(el)];
     end
@@ -187,9 +286,11 @@ for month = 7:1:12
     sunpos = sunpos(sunpos(:, 2) >= 0, :); % Filter out negative elevations
     
     % Plot and store handle
-    hsky = GDS_SKYPLOT(sunpos(:, 1), sunpos(:, 2), '-', 3, colors(month, :), '');
-    legend_handles(end+1) = hsky; % Collect handles
-    legend_entries{end+1} = month_names{month}; % Collect legend entries
+    hsky = GDS_SKYPLOT(sunpos(2:end, 1), sunpos(2:end, 2), '-', 3, colors(mt, :), '');
+    if length(sunpos)>2
+        legend_handles(end+1) = hsky; % Collect handles
+        legend_entries{end+1} = month_names{mt}; % Collect legend entries
+    end
 end
 
 % Update legend at the end
@@ -219,25 +320,32 @@ plot3(gc_xz_i(1,:), gc_xz_i(2,:), gc_xz_i(3,:), 'k', 'LineWidth', 1);
 plot3(gc_yz_i(1,:), gc_yz_i(2,:), gc_yz_i(3,:), 'k', 'LineWidth', 1);
 
 % [3] Create the GWC and plot it
-theta = theta/2;
-x = cos(theta); y = zeros(size(theta)); z = sin(theta);
-gw_i = [x' y' z']';
-plot3(gw_i(1,:), gw_i(2,:), gw_i(3,:), 'r', 'LineWidth', 2);
+% theta = theta/2;
+% x = cos(theta); y = zeros(size(theta)); z = sin(theta);
+% gw_i = [x' y' z']';
+% plot3(gw_i(1,:), gw_i(2,:), gw_i(3,:), 'r', 'LineWidth', 2);
 
 % [3] Create the Spring Point and plot it
-[t, ~, ~] = GDS_JULIANC(yr, m, d, ut1);
-[aapp,dapp,~] = GDS_SOLARPOS(t);
-[x, y, z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
-pos = POINT_TO_VECTOR(x,y,z);
-HOLD_PLOT_VEC3(pos, 'Spring Point: '+string(ut1)+'h');
+% [t, ~, ~] = GDS_JULIANC(yr, mt, dy, ut1);
+% [aapp,dapp,~] = GDS_SOLARPOS(t);
+% [x, y, z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
+% pos = POINT_TO_VECTOR(x,y,z);
+% HOLD_PLOT_VEC3(pos, 'Spring Point: '+string(ut1)+'h');
 
 % [4] Create inertial transformation matrix and rotate GWC
-[R, G] = GDS_INT_TO_LCL(lambda,phi,yr,m,d,ut1);
-gw_i = G*gw_i;
-plot3(gw_i(1,:), gw_i(2,:), gw_i(3,:), 'b', 'LineWidth', 2);
+% [R0, G0] = GDS_INT_TO_LCL(lambda,phi,yr,mt,dy,ut1);
+% gw_i = G0*gw_i;
+% plot3(gw_i(1,:), gw_i(2,:), gw_i(3,:), 'b', 'LineWidth', 2);
 
 % [5] Create the Ecliptic and plot it
-gc_ec_i = rotx(23.5)*gc_xy_i;
-plot3(gc_ec_i(1,:), gc_ec_i(2,:), gc_ec_i(3,:), 'k', 'LineWidth', 2);
+% gc_ec_i = rotx(23.5)*gc_xy_i;
+% plot3(gc_ec_i(1,:), gc_ec_i(2,:), gc_ec_i(3,:), 'k', 'LineWidth', 2);
+
+
+sunpos = deg2rad(sunpos);
+r = ones(size(sunpos(:,1)));
+[x y z] = sph2cart(sunpos(2:end, 1), sunpos(2:end, 2), r(2:end));
+plot3(flip(x),flip(y),flip(z),'y', 'LineWidth', 3);
+zlim([0 1]);
 
 hold off;

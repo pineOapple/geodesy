@@ -1,7 +1,7 @@
-function [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, m, d, ut1)
+function [R, P, N, G, t, mjd, jd, gast, gmst, eps0, deleps, delpsi, za, thetaa, zetaa] = GDS_INT_TO_LCL(lambda, phi, yr, m, d, ut1)
 % GAST, NUTATION, PRECESSION, JULICANCENTURIES
-[t, ~, ~] = GDS_JULIANC(yr, m, d, ut1);
-[gast, ~] = GDS_JUL_TO_GAST(ut1, t);
+[t, mjd, jd] = GDS_JULIANC(yr, m, d, ut1);
+[gast, gmst] = GDS_JUL_TO_GAST(ut1, t);
 [eps0, deleps, delpsi] = GDS_NUTATION(t);
 [za, thetaa, zetaa] = GDS_PRECESSION(t);
 
@@ -9,8 +9,8 @@ function [R, G] = GDS_INT_TO_LCL(lambda, phi, yr, m, d, ut1)
 % Objektrotationsmatrizen, daher überall inverse Vorzeichen.
 N = rotx(eps0+deleps)*rotz(delpsi)*rotx(-eps0);
 P = rotz(za)*roty(-thetaa)*rotz(zetaa);
-R = roty(-90+phi)*rotz(-lambda)*rotz(-(360*gast)/24)*N*P;
+G = rotz(-(360*gast)/24);
+R = roty(-90+phi)*rotz(-lambda)*G*N*P;
 
 % Anderes Vorzeichen, da wir unseren GAST im Inertialsystem und nicht im
 % Lokalsystem sehen wollen!
-G = rotz((360*gast)/24);
