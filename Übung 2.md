@@ -33,10 +33,49 @@ $$ P = R_3 (-z) R_2 (\theta) R_3 (-\xi) . $$
 2. Sie finden den zugehörigen Code im Anhang `skyboxxer.m`
 
 Zeichnen Sie mittels `skyplot` den scheinbaren Umlauf der Sonne während eines ganzen Tages. Wie lang ist der Tag (Sonnenaufgang bis -untergang) an diesen beiden Tagen?
-![[Pasted image 20240628113536.png]]
+![[Pasted image 20240720135917.png]]
 
-![[Pasted image 20240628114052.png]]
+![[Pasted image 20240720140015.png]]
+![[Pasted image 20240720140005.png]]
+
+![[Pasted image 20240720140039.png]]
+
+
+```
+Kein Sonnenuntergang für: 21/January/2024 verzeichnet
+
+Sonnenaufgang   für 21/February/2024: 4h 42min
+Sonnenuntergang für 21/February/2024: 20h 48min
+
+Sonnenaufgang   für 21/March/2024: 6h 54min
+Sonnenuntergang für 21/March/2024: 18h 30min
+
+Sonnenaufgang   für 21/April/2024: 9h 6min
+Sonnenuntergang für 21/April/2024: 15h 54min
+
+Kein Sonnenaufuntergang für: 21/May/2024 verzeichnet
+Kein Sonnenaufuntergang für: 21/June/2024 verzeichnet
+Kein Sonnenaufuntergang für: 21/July/2024 verzeichnet
+
+Sonnenaufgang   für  21/August/2024: 9h 6min
+Sonnenuntergang für  21/August/2024: 16h 12min
+
+Sonnenaufgang   für  21/September/2024: 6h 36min
+Sonnenuntergang für  21/September/2024: 18h 24min
+
+Sonnenaufgang   für  21/October/2024: 4h 6min
+Sonnenuntergang für  21/October/2024: 20h 36min
+
+Kein Sonnenuntergang für: 21/November/2024 verzeichnet
+Kein Sonnenuntergang für: 21/December/2024 verzeichnet
+```
+
 Diskussion.
+
+1. Mithilfe der Inversen unserer Transformation können wir das Koordinatensystem wieder auf ein "klassisches" Koordinatensystem legen. Damit waren die 3D plots möglich und auch die Verifikation für korrekte Transformation und dem korrekten Umgang mit den Daten.
+2. Für das **Frühlingsäquinoktium** erhalten wir eine **Tageslänge** von 11h und 36m
+3. Für die **Sommersonnenwende** erhalten wir eine **Tageslänge** von 0h, die Sonne geht hier an der Antarktis nicht auf
+4. Für das **Herbstsäquinoktium** erhalten wir eine **Tageslänge** von 11h und 46m
 ```octave
 % [4] Create inertial transformation matrix and rotate GWC
 while(true)

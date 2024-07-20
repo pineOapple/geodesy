@@ -371,6 +371,13 @@ for k = 1:1:6
         plot3(x,y,z,'MarkerSize',10,'Color','y','Marker','o','MarkerEdgeColor','k', 'MarkerFaceColor','y');
 
     end
+    mday = pos_data(pos_data(:, 2, dy, k) >= 0, :, dy, k);
+    if mday
+        disp('Sonnenaufgang für '+string(dy)+'/'+month_names(k)+'/'+string(yr) + ': '+string(floor(mday(1,3)))+ 'h ' + string((mday(1,3)-floor(mday(1,3)))*60)+'min');
+        disp('Sonnenuntergang für  '+string(dy)+'/'+month_names(k)+'/'+string(yr) + ': '+string(floor(mday(end,3)))+ 'h ' + string((mday(end,3)-floor(mday(end,3)))*60)+'min');
+    else
+        disp('Kein Sonnenauf/ -untergang für: '+string(dy)+'/'+month_names(k)+'/'+string(yr))
+    end
 end
 zlim([0 1]);
 
@@ -439,10 +446,10 @@ for k = 7:1:12
 
     mday = pos_data(pos_data(:, 2, dy, k) >= 0, :, dy, k);
     if mday
-        disp('Sunrise for '+string(dy)+'/'+month_names(k)+'/'+string(yr) + ': '+string(floor(mday(1,3)))+ 'h ' + string((mday(1,3)-floor(mday(1,3)))*60)+'min');
-        disp('Sunset for  '+string(dy)+'/'+month_names(k)+'/'+string(yr) + ': '+string(floor(mday(end,3)))+ 'h ' + string((mday(end,3)-floor(mday(end,3)))*60)+'min');
+        disp('Sonnenaufgang für '+string(dy)+'/'+month_names(k)+'/'+string(yr) + ': '+string(floor(mday(1,3)))+ 'h ' + string((mday(1,3)-floor(mday(1,3)))*60)+'min');
+        disp('Sonnenuntergang für  '+string(dy)+'/'+month_names(k)+'/'+string(yr) + ': '+string(floor(mday(end,3)))+ 'h ' + string((mday(end,3)-floor(mday(end,3)))*60)+'min');
     else
-        disp('No daylight for: '+string(dy)+'/'+month_names(k)+'/'+string(yr))
+        disp('Kein Sonnenauf/ -untergang für: '+string(dy)+'/'+month_names(k)+'/'+string(yr))
     end
 end
 
