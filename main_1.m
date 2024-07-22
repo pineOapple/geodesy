@@ -42,8 +42,8 @@ plot3(0, -E, 0, 'ro', 'DisplayName', 'Focal Point 2');
 plot3(0, 0, 0, 'ro', 'DisplayName', 'Center');
 
 % Calculate and plot radial lines
-N = geodesy.GDS_ELLIPSE_N(a, e, phi);
-[x, y, z] = geodesy.GDS_ELLIPSOID_COORD(a, e, phi, lambda);
+N = GDS_ELLIPSE_N(a, e, phi);
+[x, y, z] = GDS_ELLIPSOID_COORD(a, e, phi, lambda);
 x_end = N .* cos(phi);
 y_end = N .* (1 - e^2) .* sin(phi);
 x_start = zeros(size(phi));
@@ -64,18 +64,19 @@ surf(u,v,w, 'EdgeColor', 'none', 'FaceAlpha', 0.1)
 hold off;
 
 
-'Exzentrizität: ' + string(e)
-'Inverse Abplattung: ' + string(F)
-'Radius Fokalkreis: ' + string(E/1000)
-'Normalkrümmungsradius: ' + string(N/1000)
-'z-Achseabschnitt (N): ' + string(min(y_start)/1000)
-'Abstand Äquatorebene: ' + string(min(y_end)/1000)
-'Abstand Rotationsachse: ' + string(min(x_end)/1000)
-'Geodätische Breite: ' + string(phi.*360/(2*pi))
-'Geozentrische Breite: ' + string(psi.*360/(2*pi))
-[d1,m1,s1] = ANGLE_TO_COORD(rad2deg(phi))
-[d2,m2,s2] = ANGLE_TO_COORD(rad2deg(psi))
-'Geozentrische Abweichung: ' + sqrt(y_end.^2+x_end.^2)
+disp('Exzentrizität: ' + string(e))
+disp('Inverse Abplattung: ' + string(F))
+disp('Radius Fokalkreis: ' + string(E/1000))
+disp('Normalkrümmungsradius: ' + string(N/1000))
+disp('z-Achseabschnitt (N): ' + string(min(y_start)/1000))
+disp('Abstand Äquatorebene: ' + string(min(y_end)/1000))
+disp('Abstand Rotationsachse: ' + string(min(x_end)/1000))
+disp('Geodätische Breite: ' + string(phi.*360/(2*pi)))
+disp('Geozentrische Breite: ' + string(psi.*360/(2*pi)))
+disp('Geozentrische Abweichung: ' + sqrt(y_end.^2+x_end.^2));
+
+[d1,m1,s1] = GDS_ANGLE_TO_COORD(rad2deg(phi));
+[d2,m2,s2] = GDS_ANGLE_TO_COORD(rad2deg(psi));
 
 
 grid on
