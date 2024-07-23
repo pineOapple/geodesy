@@ -59,7 +59,7 @@ for i = 1:length(phi)
     text(0, x_end(i), y_end(i), string(i)+ ' : '+ string(phi(i)*360/(2*pi)))
 end
 
-[u v w] = ellipsoid(0,0,0,a,a,b,50);
+[u, v, w] = ellipsoid(0,0,0,a,a,b,50);
 surf(u,v,w, 'EdgeColor', 'none', 'FaceAlpha', 0.1)
 hold off;
 
