@@ -79,7 +79,7 @@ h = plot3(gw_c(1,:), gw_c(2,:), gw_c(3,:), 'b', 'LineWidth', 2);
 %     pause(0.05);
 % end
 
-[x y z] = sph2cart(deg2rad(lambda),deg2rad(phi),1);
+[x, y, z] = sph2cart(deg2rad(lambda),deg2rad(phi),1);
 POS0 = [x y z]';
 POS1 = G1*N1*P1*POS0;
 
@@ -100,7 +100,7 @@ text(0,0,1.3,'Local Time UT1: '+ string(ut1)+'h')
 % plot3()
 % [4] Create the Sunposition and plot it
 [aapp,dapp,~] = GDS_SOLARPOS(t);
-[x y z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
+[x, y, z] = sph2cart(deg2rad(aapp),deg2rad(dapp),1);
 
 quiver3(POS1(1),POS1(2),POS1(3),x,y,z, 'y', 'filled','LineWidth',2, 'AutoScale','off','MaxHeadSize',0.5);
 
@@ -118,8 +118,9 @@ title('Inverse Test')
 s = surf(u, v, w, 'EdgeColor', 'interp', 'FaceAlpha', 0.2);
 
 
-M = inv(R0);
-K0 = M*K0;
+%M = inv(R0);
+%K0 = M*K0;
+K0 = R0\K0; 
 POSS = R0*[x y z]';
 quiver3(0,0,0, K0(1,1), K0(1,2), K0(1,3), 'r', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
 quiver3(0,0,0, K0(2,1), K0(2,2), K0(2,3), 'g', 'filled','LineWidth',3, 'AutoScale','off','MaxHeadSize',0.5);
@@ -144,8 +145,8 @@ s = surf(u, v, w, 'EdgeColor', 'flat', 'FaceAlpha', 0.3);
 gw_c = G1*gw_i;
 h = plot3(gw_c(1,:), gw_c(2,:), gw_c(3,:), 'b', 'LineWidth', 2);
 
-[x y z] = sph2cart(deg2rad(lambda),deg2rad(phi),1);
-POS0 = [x y z]';
+[x, y, z] = sph2cart(deg2rad(lambda),deg2rad(phi),1);
+POS0 = [x, y, z]';
 POS1 = G1*POS0;
 
 % Originales Koordinatensystem
@@ -433,11 +434,11 @@ for k = 7:1:12
     sunpos = pos_data(:,:,dy,k);
     sunpos(:,1:2) = deg2rad(sunpos(:,1:2));
     r = ones(size(sunpos(:,1)));
-    [x y z] = sph2cart(sunpos(:, 1), sunpos(:, 2), r);
+    [x, y z] = sph2cart(sunpos(:, 1), sunpos(:, 2), r);
     plot3(x,y,z,'Color',colors(k, :), 'LineWidth', 2);
 
 
-    [x y z] = sph2cart(sunpos(sunpos(:,3)==12, 1), sunpos(sunpos(:,3)==12, 2), 1);
+    [x y, z] = sph2cart(sunpos(sunpos(:,3)==12, 1), sunpos(sunpos(:,3)==12, 2), 1);
     ut1 = 12;
     if z
         % quiver3(0,0,0,x,y,z,'y', 'filled','LineWidth',2, 'AutoScale','off','MaxHeadSize',0.5);
