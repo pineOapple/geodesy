@@ -1,4 +1,0 @@
-Hauptperiode in xP: 1.1741 Jahre
-Hauptperiode in yP: 1.1741 Jahre
-Säkulare Änderung in xP: 0.0009 arcsec/Jahr
-Säkulare Änderung in yP: 0.0025 arcsec/Jahr

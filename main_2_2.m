@@ -86,6 +86,17 @@ ylabel('Polkoordinate (arcsec)');
 legend('x_P', 'x_P-fit', 'y_P', 'y_P-fit');
 saveas(gcf, 'plots/saekulare_polbewegung.png');
 
+figure;
+set(gcf, 'Position',  [500, 100, 600, 2400]);
+plot(xP, t, xP_trend, t);
+hold on;
+plot(yP, t, yP_trend, t);
+title('Säkulare Polbewegung');
+xlabel('Zeit (Jahre)');
+ylabel('Polkoordinate (arcsec)');
+legend('x_P', 'x_P-fit', 'y_P', 'y_P-fit');
+saveas(gcf, 'plots/saekulare_polbewegung2.png');
+
 % Heatmap
 figure;
 colormap(hot)
@@ -109,7 +120,21 @@ xlabel('Zeit (Jahre)');
 ylabel('Periode (Jahre)');
 set(gca, 'YScale', 'log'); % Logarithmische Skala für bessere Darstellung
 ylim([min(period) max(period)]);
-saveas(gcf, 'plots/spektrogramm.png');
+saveas(gcf, 'plots/spektrogramm_x.png');
+
+% Spektrogramm
+figure;
+[s, f, t_spectro] = spectrogram(detrend(yP), 256, [], [], Fs, 'yaxis');
+period = 1 ./ f;
+pcolor(t_spectro + t(1), period, abs(s)); % Verschiebung von t_spectro für die korrekte Zeitdarstellung
+shading interp;
+colorbar;
+title('Spektrogramm y_P');
+xlabel('Zeit (Jahre)');
+ylabel('Periode (Jahre)');
+set(gca, 'YScale', 'log'); % Logarithmische Skala für bessere Darstellung
+ylim([min(period) max(period)]);
+saveas(gcf, 'plots/spektrogramm_y.png');
 
 % 3D Plot
 figure;
@@ -194,7 +219,21 @@ xlabel('Zeit (Jahre)');
 ylabel('Periode (Jahre)');
 set(gca, 'YScale', 'log'); % Logarithmische Skala für bessere Darstellung
 ylim([min(period) max(period)]);
-saveas(gcf, 'plots/wavelet_transform.png');
+saveas(gcf, 'plots/wavelet_transform_x.png');
+
+% Continuous Wavelet Transform mit Periodenlänge
+figure;
+[wt, f] = cwt(yP, 'amor', Fs);
+period = 1 ./ f;
+pcolor(t, period, abs(wt));
+shading interp;
+colorbar;
+title('Continuous Wavelet Transformation y_P');
+xlabel('Zeit (Jahre)');
+ylabel('Periode (Jahre)');
+set(gca, 'YScale', 'log'); % Logarithmische Skala für bessere Darstellung
+ylim([min(period) max(period)]);
+saveas(gcf, 'plots/wavelet_transform_y.png');
 
 % 3D mittel
 months = mod(floor((t - t(1)) * 12 / main_period), 12) + 1; % Monate in der Hauptperiode bestimmen
