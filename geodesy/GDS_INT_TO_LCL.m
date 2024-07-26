@@ -7,10 +7,14 @@ function [R0,P0, N0, G0,R1,P1, N1, G1, t, mjd, jd, gast, gmst, eps0, deleps, del
 
 % Systemtransformation, wir drehen das System und arbeiten mit
 % Objektrotationsmatrizen, daher überall inverse Vorzeichen.
-N0 = rotx(eps0+deleps)*rotz(delpsi)*rotx(-eps0);
-P0 = rotz(za)*roty(-thetaa)*rotz(zetaa);
-G0 = rotz(-(360*gast)/24);
-R0 = roty(-90+phi)*rotz(-lambda)*G0*N0*P0;
+% Modular matrices:
+P0 = rotz(za)*roty(-thetaa)*rotz(zetaa); % Precession
+N0 = rotx(eps0+deleps)*rotz(delpsi)*rotx(-eps0); % Nutation
+G0 = rotz(-(360*gast)/24); % Gast
+R0 = roty(-90+phi)*rotz(-lambda)*G0*N0*P0; % (Conventional inertial 2 instant terrestrial)
+
+% = roty(-90+phi)*rotz(-lambda)*G0*N0*P0*(sat_r)
+% = R0*(sat_r)-H
 
 N1 = rotx(-eps0-deleps)*rotz(-delpsi)*rotx(eps0);
 P1 = rotz(-za)*roty(thetaa)*rotz(-zetaa);
