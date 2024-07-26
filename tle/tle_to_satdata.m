@@ -1,0 +1,31 @@
+function [satdata] = tle_to_satdata(tle)
+    % DEFINIERE KONSTANTEN
+    mu_e    = 3.986 * 10E12 % Gravitationsparameter Earth [km^3/s^2] (Raumfahrtsysteme, Fasoulas)
+    % META DATA
+    satdata.epoch               = tle.epoch;                % Epoche 
+    satdata.norad_number        = tle.norad;                % Satelliten ID (NORAD Katalog Nr.)
+    satdata.bulletin_number     = tle.id;                   % Internationale Bezeichnung
+    satdata.classification      = tle.clas;                 % Klassifikation (U = öffentlich)
+    satdata.revolution_number   = tle.rNo;          	    % Anzahl an Orbits seit Start (kann zu Overflows kommen)
+    satdata.ephemeris_type      = tle.eph;                  % Ephemeris Type (0 = SGP4)
+
+    % 6 BAHNPARAMETER
+    satdata.xincl               = tle.i * (pi/180);         % 1_Inklination [rad]
+    satdata.xnodeo              = tle.raan * (pi/180);      % 2_Rektazension des aufsteigenden Knotens [rad]
+    satdata.eo                  = tle.e;                    % 3_(numerische) Exzentrizität
+    satdata.omegao              = tle.omega * (pi/180);     % 4_Argument des Perigäums [rad]
+    satdata.xmo                 = tle.M * (pi/180);         % 5_Mittlere Anomalie [rad]       
+    satdata.a                   = ( mu_e/(tle.n*2*pi/(24*60*60))^2 )^(1/3);  
+    % 6_Große Halbachse [km] auf Referenzkreisbahn a=r   > mu_e = a^3* n^2
+    % Winkelgeschwindigkeit n entspricht dabei Umdrehung/Tag deshalb Umrechnung in
+    % rad/ (sek pro Tag)
+
+   % Störterme
+    satdata.xno                 = tle.n * 2 *pi / (24 * 60); % Anzahl an Orbits [rad/min] 
+    satdata.xndt2o              = tle.bal_co * 2 *pi/ (24 * 60)^2; % == 0
+    satdata.xndd6o              = tle.TD2 * 10^tle.ExTD2 * 2 *pi/ (24 * 60)^3; % == 0
+    satdata.bstar               = (tle.bstar)*1e-5*10^tle.exp_bstar;      % Berechnung tatsächlicher Strahlungsdruckterm B*
+
+    %print satdata
+end
+

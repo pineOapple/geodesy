@@ -21,7 +21,7 @@ ut1 = 12;
 
 figure;
 colormap('gray');
-set(gcf, 'Position',  [1720, -7, 1720, 1440]);
+set(gcf, 'Position',  [0, -7, 1720, 1440]);
 tiledlayout(3,3);
 nexttile;
 
